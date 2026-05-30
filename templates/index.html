@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Зээлийн үнэлгээ - Дүүрэг системүүд</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #5b21b6;
+            --secondary-color: #7c3aed;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --light-bg: #f9fafb;
+            --border-color: #e5e7eb;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            color: var(--text-primary);
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(91, 33, 182, 0.3);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .result-container {
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+
+        .result-container.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .score-display {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .score-circle {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            color: white;
+            font-size: 50px;
+            font-weight: 700;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .score-circle.approved {
+            background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+        }
+
+        .score-circle.manual {
+            background: linear-gradient(135deg, var(--warning-color) 0%, #d97706 100%);
+        }
+
+        .score-circle.rejected {
+            background: linear-gradient(135deg, var(--danger-color) 0%, #dc2626 100%);
+        }
+
+        .score-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .decision-box {
+            text-align: center;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 5px solid;
+        }
+
+        .decision-box.approved {
+            background: rgba(16, 185, 129, 0.1);
+            border-left-color: var(--success-color);
+        }
+
+        .decision-box.manual {
+            background: rgba(245, 158, 11, 0.1);
+            border-left-color: var(--warning-color);
+        }
+
+        .decision-box.rejected {
+            background: rgba(239, 68, 68, 0.1);
+            border-left-color: var(--danger-color);
+        }
+
+        .decision-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .decision-box.approved .decision-title {
+            color: var(--success-color);
+        }
+
+        .decision-box.manual .decision-title {
+            color: var(--warning-color);
+        }
+
+        .decision-box.rejected .decision-title {
+            color: var(--danger-color);
+        }
+
+        .decision-message {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .reset-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--light-bg);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            background: var(--border-color);
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .loading {
+            display: none;
+        }
+
+        .loading.show {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .content {
+                padding: 30px 20px;
+            }
+
+            .score-circle {
+                width: 150px;
+                height: 150px;
+                font-size: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏦 Зээлийн үнэлгээ</h1>
+            <p>Таны зээлийн өргөдөлийг үнэлэх систем</p>
+        </div>
+
+        <div class="content">
+            <div class="error-message" id="errorMessage"></div>
+
+            <div id="formContainer">
+                <form id="loanForm">
+                    <div class="form-group">
+                        <label for="monthly_salary">Сарын цалин (₮)</label>
+                        <input type="number" id="monthly_salary" name="monthly_salary" 
+                               placeholder="Жишээ: 2000000" required min="0" step="10000">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="employment_type">Ажил эрхлэлтийн төрөл</label>
+                        <select id="employment_type" name="employment_type" required>
+                            <option value="">Сонгоно уу...</option>
+                            <option value="0">Байнгын ажилтан</option>
+                            <option value="1">Гэрээтэй ажилтан</option>
+                            <option value="2">Өөрийн сал эрхэлэгч</option>
+                            <option value="3">Оршин суугч</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="years_worked">Ажилласан жил</label>
+                        <input type="number" id="years_worked" name="years_worked" 
+                               placeholder="Жишээ: 5" required min="0" step="0.5">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="desired_amount">Хүссэн зээлийн дүн (₮)</label>
+                        <input type="number" id="desired_amount" name="desired_amount" 
+                               placeholder="Жишээ: 10000000" required min="0" step="100000">
+                    </div>
+
+                    <button type="submit" class="submit-btn">
+                        <span class="loading" id="loading"></span>
+                        Үнэлгээ авах
+                    </button>
+                </form>
+            </div>
+
+            <div class="result-container" id="resultContainer">
+                <div class="score-display">
+                    <div class="score-circle" id="scoreCircle">
+                        <div id="scoreValue">0</div>
+                        <div class="score-label">оноо</div>
+                    </div>
+                </div>
+
+                <div class="decision-box" id="decisionBox">
+                    <div class="decision-title" id="decisionTitle">-</div>
+                    <div class="decision-message" id="decisionMessage">-</div>
+                </div>
+
+                <button type="button" class="reset-btn" id="resetBtn">Шинээр оруулах</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('loanForm');
+        const resultContainer = document.getElementById('resultContainer');
+        const formContainer = document.getElementById('formContainer');
+        const errorMessage = document.getElementById('errorMessage');
+        const resetBtn = document.getElementById('resetBtn');
+        const loading = document.getElementById('loading');
+        const scoreValue = document.getElementById('scoreValue');
+        const scoreCircle = document.getElementById('scoreCircle');
+        const decisionTitle = document.getElementById('decisionTitle');
+        const decisionMessage = document.getElementById('decisionMessage');
+        const decisionBox = document.getElementById('decisionBox');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorMessage.classList.remove('show');
+            loading.classList.add('show');
+
+            try {
+                const formData = {
+                    monthly_salary: parseFloat(document.getElementById('monthly_salary').value),
+                    employment_type: parseInt(document.getElementById('employment_type').value),
+                    years_worked: parseFloat(document.getElementById('years_worked').value),
+                    desired_amount: parseFloat(document.getElementById('desired_amount').value)
+                };
+
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    scoreValue.textContent = data.score;
+                    decisionTitle.textContent = data.decision;
+                    decisionMessage.textContent = data.message;
+
+                    // Remove all status classes and add the new one
+                    scoreCircle.classList.remove('approved', 'manual', 'rejected');
+                    decisionBox.classList.remove('approved', 'manual', 'rejected');
+                    
+                    scoreCircle.classList.add(data.status);
+                    decisionBox.classList.add(data.status);
+
+                    formContainer.style.display = 'none';
+                    resultContainer.classList.add('show');
+                } else {
+                    showError('Алдаа: ' + data.error);
+                }
+            } catch (error) {
+                showError('Сүлжээ алдаа: ' + error.message);
+            } finally {
+                loading.classList.remove('show');
+            }
+        });
+
+        resetBtn.addEventListener('click', () => {
+            form.reset();
+            resultContainer.classList.remove('show');
+            formContainer.style.display = 'block';
+            document.getElementById('monthly_salary').focus();
+        });
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.add('show');
+        }
+
+        // Focus on first input when page loads
+        document.getElementById('monthly_salary').focus();
+    </script>
+</body>
+</html>
